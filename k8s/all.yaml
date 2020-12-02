@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clock-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: clock
+  template:
+    metadata:
+      labels:
+        app: clock
+    spec:
+      containers:
+      - name: clock
+        image: clock:v2.1
+        envFrom:
+          - configMapRef:
+              name: clock
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /healthz
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clock-service
+spec:
+  type: ClusterIP
+  selector:
+    app: clock
+  ports:
+  - port: 3000
+    targetPort: 3000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clock
+data:
+  PORT: "3000"
+  HOST: "0.0.0.0"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  rules:
+  - host: "date.192.168.49.2.nip.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service
+            port:
+              number: 3000
