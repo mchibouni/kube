@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
       - name: clock
-        image: clock:v2.1
+        image: mehdichb/clock:stable
         envFrom:
           - configMapRef:
               name: clock
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         readinessProbe:
           httpGet:
             port: 3000
