@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: clock
-        image: mehdichb/clock:stable
+        image: mehdichb/clock:stable-extra
         envFrom:
           - configMapRef:
               name: clock
